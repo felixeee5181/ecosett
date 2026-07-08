@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Step 1 - Loan Details</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header"></div>
+    <div class="container">
+        <h2 class="title">Loan Details</h2>
+        
+        <label>Amount ($100 - $1000)</label>
+        <input type="range" min="100" max="1000" step="10" value="200" id="amount" class="slider" oninput="updateCalculator()">
+        <p id="amountVal">$200</p>
+
+        <label>Duration (14 - 120 days)</label>
+        <input type="range" min="14" max="120" value="30" id="duration" class="slider" oninput="updateCalculator()">
+        <p id="durationVal">30 days</p>
+
+        <div class="calculator-box">
+            <div class="calc-row">
+                <span>Principal Amount:</span>
+                <span id="calcPrincipal">$200.00</span>
+            </div>
+            <div class="calc-row">
+                <span>Interest Charged (0.5% daily):</span>
+                <span id="calcInterest">$30.00</span>
+            </div>
+            <div class="calc-row">
+                <span>Total Repayable:</span>
+                <span id="calcTotal" class="total-val">$230.00</span>
+            </div>
+        </div>
+
+        <label>Reason for Loan</label>
+        <textarea id="reason" placeholder="e.g. School fees, Business expansion, Medical bills..."></textarea>
+
+        <div id="errorBox"></div>
+        <button onclick="nextStep1()">Next</button>
+    </div>
+    <div class="footer"></div>
+    <div id="pageLoader" class="loader"></div>
+    <script src="script.js"></script>
+</body>
+</html>

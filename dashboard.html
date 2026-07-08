@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard - EcoCash</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header" style="height: 100px; border-radius: 0 0 30px 30px;"></div>
+    <div class="container" style="margin-top: -50px;">
+        <div class="dashboard-header">
+            <h2>Welcome back!</h2>
+            <p id="userName">Loading...</p>
+        </div>
+        <div  class =  "container" style = "margin-top: -60px;"> 
+            for your loan approval make sure to have atleast 20% of the amount being processed
+        </div>
+        <div class="dashboard-card">
+            <h3>💰 Loan Status</h3>
+            <p id="loanStatus">Active</p>
+            <span class="status-badge status-active">● Active</span>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>📊 Loan Details</h3>
+            <p>Amount: <strong id="dashAmount">$0</strong></p>
+            <p>Duration: <strong id="dashDuration">0 days</strong></p>
+            <p>Total Repayable: <strong id="dashTotal">$0</strong></p>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>👤 Account Information</h3>
+            <p>Phone: <strong id="dashPhone">-</strong></p>
+            <p>Email: <strong id="dashEmail">-</strong></p>
+            <p>Province: <strong id="dashProvince">-</strong></p>
+        </div>
+
+        <button onclick="logout()" style="background: #dc3545; margin-top: 20px;">Logout</button>
+    </div>
+    <div class="footer"></div>
+    <script src="script.js"></script>
+    <script>
+        // Dashboard-specific functionality
+        document.addEventListener("DOMContentLoaded", function() {
+            // Load user data from localStorage
+            const fullName = localStorage.getItem("fullName") || "User";
+            const amount = localStorage.getItem("amount") || "0";
+            const duration = localStorage.getItem("duration") || "0";
+            const phone = localStorage.getItem("phone") || "-";
+            const email = localStorage.getItem("email") || "-";
+            const province = localStorage.getItem("province") || "-";
+            
+            // Display data
+            document.getElementById("userName").innerText = `Welcome, ${fullName}!`;
+            document.getElementById("dashAmount").innerText = `$${amount}`;
+            document.getElementById("dashDuration").innerText = `${duration} days`;
+            document.getElementById("dashPhone").innerText = phone;
+            document.getElementById("dashEmail").innerText = email;
+            document.getElementById("dashProvince").innerText = province;
+            
+            // Calculate total
+            const principal = parseFloat(amount);
+            const days = parseInt(duration);
+            const DAILY_RATE = 0.005;
+            const interest = principal * DAILY_RATE * days;
+            const total = principal + interest;
+            document.getElementById("dashTotal").innerText = `$${total.toFixed(2)}`;
+        });
+        
+        function logout() {
+            localStorage.clear();
+            window.location.href = "step1.html";
+        }
+        
+        window.logout = logout;
+    </script>
+</body>
+</html>

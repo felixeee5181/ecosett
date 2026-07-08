@@ -1,0 +1,313 @@
+/* =========================================
+   ECOCASH CLONE - UNIFIED STYLESHEET
+   ========================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Sofia+Pro:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Sofia Pro', 'Roboto', sans-serif;
+    background-color: #f4f7f6;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+body.loaded {
+    opacity: 1;
+}
+
+/* --- Header & Footer --- */
+.header {
+    background-color: #1e63c6;
+    height: 160px;
+    border-bottom-left-radius: 60px;
+    border-bottom-right-radius: 60px;
+    position: relative;
+    z-index: 1;
+}
+
+.footer {
+    background-color: #1e63c6;
+    height: 120px;
+    border-top-left-radius: 100% 80px;
+    border-top-right-radius: 100% 80px;
+    margin-top: auto;
+}
+
+/* --- Container Card --- */
+.container {
+    background: #fff;
+    width: 90%;
+    max-width: 420px;
+    margin: -80px auto 40px;
+    padding: 30px;
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 2;
+    box-sizing: border-box;
+}
+
+.title {
+    color: #1e63c6;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+/* --- Form Elements --- */
+label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #555;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 15px;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: inherit;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #1e63c6;
+}
+
+textarea {
+    height: 100px;
+    resize: none;
+}
+
+button {
+    width: 100%;
+    padding: 16px;
+    background-color: #1e63c6;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #154ea6;
+}
+
+/* --- Slider Styling --- */
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 8px;
+    background: #ddd;
+    border-radius: 5px;
+    outline: none;
+    margin: 15px 0;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    background: #1e63c6;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+
+#amountVal, #durationVal {
+    text-align: center;
+    font-weight: 700;
+    color: #1e63c6;
+    font-size: 18px;
+    margin-top: -5px;
+    margin-bottom: 20px;
+}
+
+/* --- Calculator Box --- */
+.calculator-box {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.calc-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 15px;
+}
+
+.calc-row:last-child {
+    margin-bottom: 0;
+    padding-top: 12px;
+    border-top: 1px dashed #ccc;
+    font-weight: 700;
+    font-size: 17px;
+}
+
+.total-val {
+    color: #ff9900;
+}
+
+/* --- Error Box --- */
+#errorBox {
+    color: #e02020;
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 15px;
+    display: none;
+}
+
+#successBox {
+    color: #28a745;
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 15px;
+    display: none;
+    padding: 10px;
+    background: #d4edda;
+    border-radius: 8px;
+}
+
+/* --- Loader --- */
+.loader {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    border: 5px solid #ddd;
+    border-top: 5px solid #1e63c6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    z-index: 9999;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* --- Login Specific --- */
+.logo {
+    font-size: 44px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.logo .eco { color: #1e63c6; }
+.logo .cash { color: #e02020; }
+
+.pin-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 20px 0;
+}
+.pin-box {
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+.forgot {
+    color: #1e63c6;
+    text-align: center;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+/* --- Summary --- */
+.summary p {
+    margin: 10px 0;
+    font-size: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 5px;
+}
+.summary strong { color: #555; }
+
+/* --- Dashboard Specific --- */
+.dashboard-header {
+    background: #1e63c6;
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.dashboard-header h2 {
+    font-size: 28px;
+    margin-bottom: 5px;
+}
+
+.dashboard-card {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    border-left: 4px solid #1e63c6;
+}
+
+.dashboard-card h3 {
+    color: #1e63c6;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.dashboard-card p {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-active { background: #d4edda; color: #155724; }
+.status-pending { background: #fff3cd; color: #856404; }
+
+/* --- Responsive --- */
+@media (max-width: 480px) {
+    .container {
+        width: 95%;
+        padding: 20px;
+    }
+    .pin-box {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+}

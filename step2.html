@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Step 2 - Personal Details</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header"></div>
+    <div class="container">
+        <h2 class="title">Personal Details</h2>
+        
+        <label>First Name</label>
+        <input type="text" id="fname" placeholder="Enter your first name">
+
+        <label>Last Name</label>
+        <input type="text" id="lname" placeholder="Enter your last name">
+
+        <label>Phone Number</label>
+        <input type="tel" id="phone" value="+263" placeholder="+2637XXXXXXXX">
+
+        <label>Email Address</label>
+        <input type="email" id="email" placeholder="example@mail.com">
+
+        <div id="errorBox"></div>
+        <button onclick="nextStep2()">Next</button>
+    </div>
+    <div class="footer"></div>
+    <div id="pageLoader" class="loader"></div>
+    <script src="script.js"></script>
+</body>
+</html>

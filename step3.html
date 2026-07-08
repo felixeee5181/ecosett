@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Step 3 - Next of Kin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header"></div>
+    <div class="container">
+        <h2 class="title">Next of Kin</h2>
+        
+        <label>Kin First Name</label>
+        <input type="text" id="kfname" placeholder="Kin's first name">
+
+        <label>Kin Last Name</label>
+        <input type="text" id="klname" placeholder="Kin's last name">
+
+        <label>Kin Phone Number</label>
+        <input type="tel" id="kphone" value="+263" placeholder="+2637XXXXXXXX">
+
+        <label>Province</label>
+        <select id="province">
+            <option value="">Select Province</option>
+            <option>Harare</option>
+            <option>Bulawayo</option>
+            <option>Manicaland</option>
+            <option>Mashonaland East</option>
+            <option>Mashonaland West</option>
+            <option>Masvingo</option>
+            <option>Midlands</option>
+            <option>Matabeleland North</option>
+            <option>Matabeleland South</option>
+        </select>
+
+        <div id="errorBox"></div>
+        <button onclick="nextStep3()">Next</button>
+    </div>
+    <div class="footer"></div>
+    <div id="pageLoader" class="loader"></div>
+    <script src="script.js"></script>
+</body>
+</html>

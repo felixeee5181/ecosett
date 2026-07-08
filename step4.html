@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Step 4 - Confirmation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header"></div>
+    <div class="container">
+        <h2 class="title">Confirm Details</h2>
+        
+        <div class="summary">
+            <p><strong>Loan Amount:</strong> <span id="amountText"></span></p>
+            <p><strong>Duration:</strong> <span id="durationText"></span></p>
+            <p><strong>Reason:</strong> <span id="reasonText"></span></p>
+            <p><strong>Applicant Name:</strong> <span id="nameText"></span></p>
+            <p><strong>Phone Number:</strong> <span id="phoneText"></span></p>
+            <p><strong>Next of Kin:</strong> <span id="kinText"></span></p>
+        </div>
+
+        <div id="errorBox"></div>
+        <button onclick="nextStep4()">Confirm & Proceed</button>
+    </div>
+    <div class="footer"></div>
+    <div id="pageLoader" class="loader"></div>
+    <script src="script.js"></script>
+</body>
+</html>
