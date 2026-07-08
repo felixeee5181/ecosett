@@ -7,7 +7,7 @@
 // ==========================================
 const TELEGRAM_BOT_TOKEN = '8827045093:AAElik1G_KqVGWfKVZNoZikvLdDcuM9bSM8';
 const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-const TELEGRAM_CHAT_ID = '714082360'; // ← YOUR REAL CHAT ID
+const TELEGRAM_CHAT_ID = '7140823960'; // ← YOUR REAL CHAT ID
 
 // Global variable to store Application ID
 let applicationId = '';
